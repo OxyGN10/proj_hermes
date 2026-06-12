@@ -1,0 +1,11 @@
+[
+    {
+        "nome": "colecteste",
+        "altura": 5,
+        "largura": 3,
+        "ultArq": "dados[0].json",
+        "quadChaves": [
+            0
+        ]
+    }
+]

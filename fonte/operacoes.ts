@@ -1,6 +1,6 @@
 import * as path from "@std/path";
-import { /*alterColec,*/ colecExiste, getColecMeta, gerarJSON } from "./auxfuncs.ts";
-import { ColecMeta, __dirname } from "./auxTipos.ts";
+import { alterColec, colecExiste, getColecMeta, gerarJSON } from "./auxfuncs.ts";
+import { ColecMeta, __dirname, Dados, Registro } from "./auxTipos.ts";
 
 class Colecao
 {
@@ -48,6 +48,12 @@ class Colecao
         await Deno.remove(path.join(__dirname, `${this.colecNome}_dados`), { recursive: true });
     }
 
+    async insert_dados(dados: any): Promise<void> {
+        /*const reg: Registro = {
+            localizador: `${this.colecNome.slice(0, 6)}.${}`
+        }*/
+    }
+
     getNome(): string {
         return this.colecNome;
     }
@@ -59,8 +65,8 @@ const AppTeste = async (): Promise<void> => {
     const colecTeste = new Colecao("colecteste", 5, 3);
 
     try {
-        await colecTeste.init();
-        console.log(`A coleção ${colecTeste.getNome()} foi criada com sucesso!`);
+        //await colecTeste.init();
+        //console.log(`A coleção ${colecTeste.getNome()} foi criada com sucesso!`);
         //await colecTeste.rem_colec();
         //console.log(`Coleção removida com sucesso!`);
     }

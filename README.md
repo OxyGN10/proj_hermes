@@ -1,6 +1,8 @@
 # proj_hermes
 Projeto Hermes
 
+[📜Memorando](memorandum.md)
+
 ## Apresentação
 
 O Projeto Hermes (antigo IODJSON) é uma interface de manipulação de dados persistentes em nível de aplicação, o projeto se propõe a ser uma alternativa ao SQLite como uma solução moderna capaz de se integrar mais nativamente à aplicação.

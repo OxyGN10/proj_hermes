@@ -1,8 +1,8 @@
 # Memorando de Projeto
 
-**Autor:** Felipe Eugênio Trindade Gaspar
-**Data**: jun/2026
-**Assunto**: Projeto Hermes - Reformulação do Projeto IODJSON
+**Autor:** Felipe Eugênio Trindade Gaspar<br>
+**Data**: jun/2026<br>
+**Assunto**: Projeto Hermes - Reformulação do Projeto IODJSON<br>
 
 ## Propósito do Projeto
 

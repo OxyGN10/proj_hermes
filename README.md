@@ -81,7 +81,7 @@ Hermes(Modos.buscar_dados, { colecNome: "ColecTeste", localizador: "ColecT.0.1"}
 ```
 import { Modos, Hermes } from "./proj_hermes/index.ts";
 
-Hermes(Modos.buscar_dados, { 
+Hermes(Modos.buscar_dados_it, { 
         colecNome: "ColecTeste", 
         dadosBusca: { atributo: "idade", valor: 25 }
     }

@@ -14,9 +14,9 @@ Após testes, o Deno mostrou-se a ferramenta ideal para o propósito do projeto.
 
 ## Desafios Técnicos Identificados
 
-- **Remoção de Registros**: Remoções de dados podem criar lacunas nos vetores das chaves, como o algoritmo sempre vai inserir os dados na última chave, as chaves anteriores podem ter posições vagas após a remoção de um registro se houver uma chave posterior. Estuda-se a implementação de um método conhecido como `reset()` na classe coleção para reorganizar os dados e preencher as lacunas.
+- **Remoção de Registros**: Remoções de dados podem criar lacunas nos vetores das chaves, como o algoritmo sempre vai inserir os dados na última chave, as chaves anteriores podem ter posições vagas após a remoção de um registro se houver uma chave posterior. Estuda-se a implementação de um método conhecido como `reset()` na classe coleção para reorganizar os dados e preencher as lacunas;
 
-- **Backup da coleção**: 
+- **Backup da coleção**: Remoções de coleções também removem os arquivos de dados e seus conteúdos por esta razão estuda-se também implementar uma função para copiar os dados presentes nas chaves, um método como `backup()` permitirá ao usuário salvar os dados caso seja necessário copiar os dados prevenindo-os da exclusão da coleção.
 
 ## Planos Futuros
 - Preparação para publicação no JSR.

@@ -33,14 +33,14 @@ export const colecExiste = async (colecNome: string): Promise<boolean> => {
     return false;
 }
 
-export const gerarJSON = async (colecNome: string, chaveAnt: number = 0): Promise<number> => {
+export const gerarJSON = async (colecNome: string, chaveAnt: number = -1): Promise<number> => {
     const colecMeta: ColecMeta[] = await getColecMeta();
 
     for(let colec of colecMeta) 
     {
         if(colec.nome == colecNome && colec.quadChaves.length < colec.largura) {
             const chavef: number = chaveAnt + 1;    
-            await Deno.writeTextFile(path.join(__dirname, `${colecNome}_dados.json`, `dados[${chavef}]`), JSON.stringify({ chave: chavef, disp: colec.altura }, null, 4));
+            await Deno.writeTextFile(path.join(__dirname, `${colecNome}_dados`, `dados[${chavef}].json`), JSON.stringify([{ chave: chavef, disp: colec.altura }], null, 4));
 
             return chavef;
         }
@@ -66,8 +66,8 @@ export const getChave = async (colecNome: string): Promise<number> => {
 
     while(true)
     {
-        let dados: any = JSON.parse(await Deno.readTextFile(path.join(caminhos.colecPasta, colec.ultArq)));
-        
+        let dados: any[] = JSON.parse(await Deno.readTextFile(path.join(caminhos.colecPasta, colec.ultArq)));
+
         if(dados[0].disp > 0)
             return dados[0].chave;
 
@@ -81,6 +81,30 @@ export const getChave = async (colecNome: string): Promise<number> => {
 
         await alterColec(colecNome, colec);
     }
+}
+
+export const getPos = async (colecNome: string): Promise<number> => {
+    const colecMeta: ColecMeta[] = await getColecMeta();
+
+    for(let colec of colecMeta) {
+        if(colec.nome == colecNome) {
+            const ultChave: Array<any> = JSON.parse(await Deno.readTextFile(path.join(__dirname, `${colecNome}_dados`, colec.ultArq)));
+            
+            for(let j: number = 1; j < colec.altura; j++) {
+                if(!ultChave[j])
+                    return j;
+            }
+        }
+    }
+
+    throw new Error("Coleção não encontrada");
+}
+
+export const getDadosArq = async (colecNome: string, chave: number): Promise<any[]> => {
+    const caminho: string = path.join(__dirname, `${colecNome}_dados`, `dados[${chave}].json`);
+    const dadosArq: any[] = JSON.parse(await Deno.readTextFile(caminho));
+    
+    return dadosArq;
 }
 
 export const formatDados = (dados: any): Dados[] => {
@@ -98,50 +122,18 @@ export const formatDados = (dados: any): Dados[] => {
     return dadosf;
 }
 
-export const formatReg = (arr: Dados[], idx = 0, res: any = {}): any => {
-    if(idx == arr.length)
-        return res;
+export const formatReg = (arr: Array<Dados>): Record<string, any> => {
+    let dadosi: Record<string, any> = {};
 
-    const item = arr[idx];
+    for(let dado of arr) {
+        if(dado?.atributo) {
+            if(dado.atributo in dadosi) {
+                console.warn(`Atributo duplicado: ${dado.atributo}`);
+            }
 
-    if(item && item.atributo)
-        res[item.atributo] = item.valor;
+            dadosi[dado.atributo] = dado.valor;
+        }
+    }
 
-    return formatReg(arr, idx+1, res);
+    return dadosi;
 }
-
-//Área de teste
-/*const AppTeste = async (): Promise<void> => {
-    const colecTeste = new Colecao("colecteste", 5, 3);
-
-    try {
-        //await colecTeste.init();
-        //console.log(`A coleção ${colecTeste.getNome()} foi criada com sucesso!`);
-        //await colecTeste.rem_colec();
-        //console.log(`Coleção removida com sucesso!`);
-    }
-    catch(err) {
-        if(err instanceof Error)
-            console.error(`Erro: ${err.message}`);
-    }
-}*/
-
-const AppTeste = (): void => {
-    const dados: {
-        nome: string,
-        idade: number,
-        maior: true
-    } = {
-        nome: "Felipe Eugênio",
-        idade: 25,
-        maior: true
-    }
-
-    const dadosf: Dados[] = formatDados(dados);
-    const dadosi: any = formatReg(dadosf);
-
-    console.log(dadosf);
-    console.log(dadosi);
-}
-
-AppTeste();

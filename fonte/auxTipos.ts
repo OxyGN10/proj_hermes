@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { dirname, fromFileUrl } from "@std/path";
 
 export const __dirname: string = dirname(fromFileUrl(import.meta.url));
@@ -18,4 +19,22 @@ export interface Dados {
 export interface Registro {
     localizador: string;
     dados: Dados[];
+}
+
+export interface h_params {
+    colecNome?: string,
+    localizador?: string,
+    altura?: number,
+    largura?: number,
+    dados?: any,
+    dadosBusca?: Dados
+}
+
+export enum Modos {
+    iniciar_colec,
+    remover_colec,
+    salvar_dados,
+    remover_dados,
+    buscar_dados,
+    buscar_dados_it,
 }

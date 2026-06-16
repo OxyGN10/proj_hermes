@@ -25,6 +25,10 @@ Após testes, o Deno mostrou-se a ferramenta ideal para o propósito do projeto.
 - Desenvolvimento da lógica de reorganização (método `reset()`);
 - Otimização da busca recursiva;
 
+## História 
+
+Desenvolvendo um projeto em React Native, precisava criar uma seção na aplicação voltada exclusivamente para o gerenciamento de dados contidos em arquivos JSON, ocorre que utilizar a cláusula `node:require()` acessa o arquivo JSON como somente leitura impossibilitando a reescrita do arquivo, então decidi fazer estudos com o `node:fs` para manipular o arquivo JSON, o programa ganhou uma complexidade tanta que se tornou um programa à parte, funcionando com uma lógica completamente distinta do programa principal, após realizar alguns testes com o `fs` surge a primeira versão do IODJSON, no entanto um problema havia: *como buscar por um dado que eu não conheço sua posição exata?*, a resposta veio como uma luz em minha mente: *"busca recursiva"*, outro problema silencioso, se encontrava no próprio JavaScript, já a partir da versão 4.1 do IODJSON (última versão do projeto hermes com o antigo nome), a ideia era recriar o projeto otimizando-o em TypeScript, mas havia um problema com isso, o fato do Node.js não oferecer suporte nativo ao TS, para contornar tal limitação, ao migrar pro TS, optei então pela tecnologia Deno e tem dado os resultados desejados para a proposta do projeto.
+
 ## AVISO
 
 O Projeto Hermes não se propõe a substituir bancos de dados como PostgreSQL, MySQL ou MongoDB. Trata-se de uma interface de gerenciamento de dados em arquivos a nível de aplicação, se seu projeto demanda acesso concorrente e criptografia a recomendação é utilizar os SGBDs, mas se seu projeto demandar acesso rápido a uma informação não sensível como metadados em aplicações.

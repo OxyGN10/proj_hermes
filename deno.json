@@ -1,11 +1,9 @@
 {
   "tasks": {
-    "dev": "deno run --watch --allow-net main.ts",
-    "start": "deno run index.ts"
+    "dev": "deno run --watch --allow-net main.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "@std/path": "jsr:@std/path@^1.1.5"
-  },
-  "vendor": true
+  }
 }

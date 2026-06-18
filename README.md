@@ -15,7 +15,7 @@ Conceder ao desenvolvedor de uma aplicação uma alternativa mais simplificada p
 
 - **Coleção**: Diretório que armazena um conjunto de arquivos de dados;
 - **Chave**: Arquivo JSON que armazena um conjunto de registros em array;
-- **Registro**: Array de dados no formato: `{ atributo: "atributo", dado: "valor" }` e localizador;
+- **Registro**: Array de dados no formato: `{ atributo: string, dado: any }` e localizador;
 - **Localizador**: Metadados de registro, composto pelos 6 primeiros caracteres do nome da coleção, a chave em que se encontra e a posição em que foi inserido na chave;
 - **ColecMeta**: Arquivo JSON que armazena um Array com os dados sobre as coleções, como *nome, altura, largura* e *quadro de chaves*
 - **Altura da coleção**: Limite de registros em um arquivo desconsiderando o cabeçalho da chave (metadados de chave);

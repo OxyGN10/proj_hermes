@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { dirname, fromFileUrl } from "@std/path";
 
-export const __dirname: string = dirname(fromFileUrl(import.meta.url));
+export const __dirname: string = import.meta.dirname!;
 
 export interface ColecMeta {
     nome: string;

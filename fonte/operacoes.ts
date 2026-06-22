@@ -55,8 +55,8 @@ export class Colecao
         let colecMeta: ColecMeta[] = await getColecMeta();
         colecMeta.push(colecMetaDados);
         
-        await Deno.mkdir(path.join(__dirname, `${this.colecNome}_dados`));        
-        await Deno.writeTextFile(path.join(__dirname, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
+        await Deno.mkdir(path.join(__dirname, "hermes_src",`${this.colecNome}_dados`));        
+        await Deno.writeTextFile(path.join(__dirname, "hermes_src", "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
         await gerarJSON(this.colecNome);
     }
 
@@ -68,8 +68,8 @@ export class Colecao
         const idx: number = colecMeta.findIndex(colec => colec.nome == this.colecNome);
 
         colecMeta.splice(idx, 1);
-        await Deno.writeTextFile(path.join(__dirname, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
-        await Deno.remove(path.join(__dirname, `${this.colecNome}_dados`), { recursive: true });
+        await Deno.writeTextFile(path.join(__dirname, "hermes_src", "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
+        await Deno.remove(path.join(__dirname, "hermes_src", `${this.colecNome}_dados`), { recursive: true });
     }
 
     async insert_dados(dados: any): Promise<void> {
@@ -86,7 +86,7 @@ export class Colecao
         dadosArq.push(reg);
         dadosArq[0].disp--;
 
-        await Deno.writeTextFile(path.join(__dirname, `${this.colecNome}_dados`, `dados[${chave}].json`), JSON.stringify(dadosArq, null, 4));
+        await Deno.writeTextFile(path.join(__dirname, "hermes_src", `${this.colecNome}_dados`, `dados[${chave}].json`), JSON.stringify(dadosArq, null, 4));
     }
 
     async busca_direta(localizador: string): Promise<any> {
@@ -99,7 +99,7 @@ export class Colecao
 
         console.log(`Chave: ${chave} | pos: ${pos}`);
 
-        const dados: any[] = JSON.parse(await Deno.readTextFile(path.join(__dirname, `${this.colecNome}_dados`, `dados[${chave}].json`)));
+        const dados: any[] = JSON.parse(await Deno.readTextFile(path.join(__dirname, "hermes_src", `${this.colecNome}_dados`, `dados[${chave}].json`)));
     
         return { localizador: dados[pos].localizador, ...formatReg(dados[pos].dados) };
     }
@@ -116,7 +116,7 @@ export class Colecao
             if(i >= this.quadChaves.length)
                 break;
 
-            const caminho: string = path.join(__dirname, `${this.colecNome}_dados`, `dados[${i}].json`);
+            const caminho: string = path.join(__dirname, "hermes_src", `${this.colecNome}_dados`, `dados[${i}].json`);
             const chave: Array<any> = JSON.parse(await Deno.readTextFile(caminho));
 
             if(j >= chave.length) {
@@ -147,7 +147,7 @@ export class Colecao
         
         const chave: number = parseInt(loc[1]);
         const pos: number = parseInt(loc[2]);
-        const caminho: string = path.join(__dirname, `${this.colecNome}_dados`, `dados[${chave}].json`);
+        const caminho: string = path.join(__dirname, "hermes_src", `${this.colecNome}_dados`, `dados[${chave}].json`);
         const dados: Array<any> = JSON.parse(await Deno.readTextFile(caminho));        
 
         dados.splice(pos, 1);

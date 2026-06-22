@@ -19,11 +19,15 @@ Após testes, o Deno mostrou-se a ferramenta ideal para o propósito do projeto.
 - **Backup da coleção**: Remoções de coleções também removem os arquivos de dados e seus conteúdos por esta razão estuda-se também implementar uma função para copiar os dados presentes nas chaves, um método como `backup()` permitirá ao usuário salvar os dados caso seja necessário copiar os dados prevenindo-os da exclusão da coleção.
 
 ## Planos Futuros
-- Preparação para publicação no JSR.
-- Publicação como pacote JSR (gerenciador de pacotes do ecossistema Deno, equivalente ao NPM do Node.js);
+- ~~Preparação para publicação no JSR.~~
+- ~~Publicação como pacote JSR (gerenciador de pacotes do ecossistema Deno, equivalente ao NPM do Node.js);~~
 - Integração com outras aplicações JS ou TS baseadas em Deno.
 - Desenvolvimento da lógica de reorganização (método `reset()`);
-- Otimização da busca recursiva;
+- ~~Otimização da busca recursiva;~~
+
+## Desafios Vencidos
+- Transformação da busca recursiva em busca iterativa, otimizando-a;
+- Publicação como pacote JSR (o pacote encontra-se em adaptação).
 
 ## História 
 

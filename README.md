@@ -23,7 +23,7 @@ Conceder ao desenvolvedor de uma aplicação uma alternativa mais simplificada p
 
 ## Função Principal
 
-Em vez de precisar instanciar uma classe e utilzizar vários métodos, o Hermes realiza a exportação de uma função e através do enum *Modos* que é exportado juntamente com a função o usuário consegue orientar a execução do programa.
+Em vez de precisar instanciar uma classe e utilizar vários métodos, o Hermes realiza a exportação de uma função e através do enum *Modos* que é exportado juntamente com a função o usuário consegue orientar a execução do programa.
 
 ### Definição da Função
 `const Hermes = async (modo: Modos, params: h_params): Promise<any>`

@@ -1,6 +1,4 @@
 // deno-lint-ignore-file no-explicit-any
-import { dirname, fromFileUrl } from "@std/path";
-
 export const __dirname: string = Deno.cwd();
 
 export interface ColecMeta {

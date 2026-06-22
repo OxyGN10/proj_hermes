@@ -1,8 +1,13 @@
 import * as path from "@std/path";
+import { exists } from "@std/fs";
 import { ColecMeta, __dirname, Dados, Registro } from "./auxTipos.ts";
 
 export const getColecMeta = async (): Promise<ColecMeta[]> => {
-    const caminho: string = path.join(__dirname, "colecMeta.json");
+    const caminho: string = path.join(__dirname, "hermes_src", "colecMeta.json");
+
+    if((!await exists(caminho)))
+        await setEnviroment();
+
     const colecMeta: ColecMeta[] = JSON.parse(await Deno.readTextFile(caminho));
 
     return colecMeta;
@@ -14,12 +19,20 @@ export const alterColec = async (colecNome: string, dados: ColecMeta): Promise<v
     for(let i: number = 0; i < colecMeta.length; i++) {
         if(colecMeta[i].nome == colecNome) {
             colecMeta[i] = dados;
-            await Deno.writeTextFile(path.join(__dirname, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
+            await Deno.writeTextFile(path.join(__dirname, "hermes_src", "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
             return;
         }
     }
 
     throw new Error("A coleção não existe!");
+}
+
+
+//Esta função inicializa o ambiente de execução do Hermes, deve ser executada somente uma vez no projeto
+const setEnviroment = async (): Promise<void> => {
+    const caminho: string = path.join(__dirname, "hermes_src", "colecMeta.json");
+    await Deno.mkdir(path.join(__dirname, "hermes_src"));
+    await Deno.writeTextFile(caminho, JSON.stringify([]));
 }
 
 export const colecExiste = async (colecNome: string): Promise<boolean> => {
@@ -40,7 +53,7 @@ export const gerarJSON = async (colecNome: string, chaveAnt: number = -1): Promi
     {
         if(colec.nome == colecNome && colec.quadChaves.length < colec.largura) {
             const chavef: number = chaveAnt + 1;    
-            await Deno.writeTextFile(path.join(__dirname, `${colecNome}_dados`, `dados[${chavef}].json`), JSON.stringify([{ chave: chavef, disp: colec.altura }], null, 4));
+            await Deno.writeTextFile(path.join(__dirname, "hermes_src", `${colecNome}_dados`, `dados[${chavef}].json`), JSON.stringify([{ chave: chavef, disp: colec.altura }], null, 4));
 
             return chavef;
         }
@@ -54,8 +67,8 @@ export const gerarJSON = async (colecNome: string, chaveAnt: number = -1): Promi
 export const getChave = async (colecNome: string): Promise<number> => {
     let ultChave: number;
     const caminhos: { colecMeta: string, colecPasta: string } = {
-        colecMeta: path.join(__dirname, "colecMeta.json"),
-        colecPasta: path.join(__dirname, `${colecNome}_dados`)
+        colecMeta: path.join(__dirname, "hermes_src", "colecMeta.json"),
+        colecPasta: path.join(__dirname, "hermes_src", `${colecNome}_dados`)
     };
 
     const colecMeta: ColecMeta[] = await getColecMeta();
@@ -88,7 +101,7 @@ export const getPos = async (colecNome: string): Promise<number> => {
 
     for(let colec of colecMeta) {
         if(colec.nome == colecNome) {
-            const ultChave: Array<any> = JSON.parse(await Deno.readTextFile(path.join(__dirname, `${colecNome}_dados`, colec.ultArq)));
+            const ultChave: Array<any> = JSON.parse(await Deno.readTextFile(path.join(__dirname, "hermes_src", `${colecNome}_dados`, colec.ultArq)));
             
             for(let j: number = 1; j < colec.altura; j++) {
                 if(!ultChave[j])
@@ -101,7 +114,7 @@ export const getPos = async (colecNome: string): Promise<number> => {
 }
 
 export const getDadosArq = async (colecNome: string, chave: number): Promise<any[]> => {
-    const caminho: string = path.join(__dirname, `${colecNome}_dados`, `dados[${chave}].json`);
+    const caminho: string = path.join(__dirname, "hermes_src", `${colecNome}_dados`, `dados[${chave}].json`);
     const dadosArq: any[] = JSON.parse(await Deno.readTextFile(caminho));
     
     return dadosArq;

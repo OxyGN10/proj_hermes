@@ -1,42 +1,20 @@
-import * as path from "@std/path";
-import { exists } from "@std/fs";
-import { ColecMeta, __dirname, Dados, Registro } from "./auxTipos.ts";
+import * as path from "@bearz/path";
+import * as fs from "@bearz/fs";
+import { type ColecMeta, type Dados, dirRaiz, type RegMeta } from "./auxTipos";
 
 export const getColecMeta = async (): Promise<ColecMeta[]> => {
-    const caminho: string = path.join(__dirname, "hermes_src", "colecMeta.json");
+    const caminho: string = path.join(dirRaiz , "colecMeta.json");
+    
+    if((!await fs.exists(caminho)))
+        await defAmbiente();
 
-    if((!await exists(caminho)))
-        await setEnviroment();
+    const colecMeta: Array<ColecMeta> = JSON.parse(await fs.readTextFile(caminho));
 
-    const colecMeta: ColecMeta[] = JSON.parse(await Deno.readTextFile(caminho));
-
-    return colecMeta;
-}
-
-export const alterColec = async (colecNome: string, dados: ColecMeta): Promise<void> => {
-    let colecMeta: ColecMeta[] = await getColecMeta();
-
-    for(let i: number = 0; i < colecMeta.length; i++) {
-        if(colecMeta[i].nome == colecNome) {
-            colecMeta[i] = dados;
-            await Deno.writeTextFile(path.join(__dirname, "hermes_src", "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
-            return;
-        }
-    }
-
-    throw new Error("A coleção não existe!");
-}
-
-
-//Esta função inicializa o ambiente de execução do Hermes, deve ser executada somente uma vez no projeto
-const setEnviroment = async (): Promise<void> => {
-    const caminho: string = path.join(__dirname, "hermes_src", "colecMeta.json");
-    await Deno.mkdir(path.join(__dirname, "hermes_src"));
-    await Deno.writeTextFile(caminho, JSON.stringify([]));
+    return colecMeta;    
 }
 
 export const colecExiste = async (colecNome: string): Promise<boolean> => {
-    const colecMeta: ColecMeta[] = await getColecMeta();
+    const colecMeta: Array<ColecMeta> = await getColecMeta();
 
     for(const colec of colecMeta) {
         if(colec.nome == colecNome)
@@ -46,88 +24,40 @@ export const colecExiste = async (colecNome: string): Promise<boolean> => {
     return false;
 }
 
-export const gerarJSON = async (colecNome: string, chaveAnt: number = -1): Promise<number> => {
-    const colecMeta: ColecMeta[] = await getColecMeta();
+export const defAmbiente = async (): Promise<void> => {
+    const caminho: string = path.join(dirRaiz, "colecMeta.json");
+    await fs.makeDir(dirRaiz);
+    await fs.writeTextFile(caminho, JSON.stringify([]));
+}
+
+export const gerarJSON = async (colecNome: string, chave: number = 0): Promise<number> => {
+    const colecMeta: Array<ColecMeta> = await getColecMeta();
 
     for(let colec of colecMeta) 
     {
         if(colec.nome == colecNome && colec.quadChaves.length < colec.largura) {
-            const chavef: number = chaveAnt + 1;    
-            await Deno.writeTextFile(path.join(__dirname, "hermes_src", `${colecNome}_dados`, `dados[${chavef}].json`), JSON.stringify([{ chave: chavef, disp: colec.altura }], null, 4));
+            await fs.writeTextFile(path.join(dirRaiz, `${colecNome}_dados`, `dados[${chave}].json`), JSON.stringify([{ chave: chave, disp: colec.altura }], null, 4));
 
-            return chavef;
+            return chave;
         }
-        else if(colec.nome == colecNome && colec.quadChaves.length >= chaveAnt)
+        else if(colec.nome == colecNome && colec.quadChaves.length >= chave)
             throw new Error("A coleção está cheia, não é possível acrescentar novas chaves");
     }
 
-    throw new Error("Nome inválido de coleção ou não existe");
+    throw new Error("Nome de coleção incorreto ou coleção inexistente");
 }
 
-export const getChave = async (colecNome: string): Promise<number> => {
-    let ultChave: number;
-    const caminhos: { colecMeta: string, colecPasta: string } = {
-        colecMeta: path.join(__dirname, "hermes_src", "colecMeta.json"),
-        colecPasta: path.join(__dirname, "hermes_src", `${colecNome}_dados`)
-    };
-
-    const colecMeta: ColecMeta[] = await getColecMeta();
-    const colec = colecMeta.find(colecao => colecao.nome == colecNome);
-
-    if(!colec)
-        throw new Error("Coleção não encontrada");
-
-    while(true)
-    {
-        let dados: any[] = JSON.parse(await Deno.readTextFile(path.join(caminhos.colecPasta, colec.ultArq)));
-
-        if(dados[0].disp > 0)
-            return dados[0].chave;
-
-        if(dados[0].chave > colec.largura)
-            throw new Error("Quantidade máxima de chaves alcançada!");
-
-        ultChave = await gerarJSON(colecNome, dados[0].chave);
-        
-        colec.quadChaves.push(ultChave);
-        colec.ultArq = `dados[${ultChave}].json`;
-
-        await alterColec(colecNome, colec);
-    }
-}
-
-export const getPos = async (colecNome: string): Promise<number> => {
-    const colecMeta: ColecMeta[] = await getColecMeta();
-
-    for(let colec of colecMeta) {
-        if(colec.nome == colecNome) {
-            const ultChave: Array<any> = JSON.parse(await Deno.readTextFile(path.join(__dirname, "hermes_src", `${colecNome}_dados`, colec.ultArq)));
-            
-            for(let j: number = 1; j < colec.altura; j++) {
-                if(!ultChave[j])
-                    return j;
-            }
-        }
-    }
-
-    throw new Error("Coleção não encontrada");
-}
-
-export const getDadosArq = async (colecNome: string, chave: number): Promise<any[]> => {
-    const caminho: string = path.join(__dirname, "hermes_src", `${colecNome}_dados`, `dados[${chave}].json`);
-    const dadosArq: any[] = JSON.parse(await Deno.readTextFile(caminho));
-    
-    return dadosArq;
-}
-
-export const formatDados = (dados: any): Dados[] => {
-    const atributos: string[] = Object.keys(dados);
-    const valores: any[] = Object.values(dados);
-    let dadosf: Dados[] = [];
+export const formatDados = (dados: any): Array<Dados> => {
+    const atributos: Array<string> = Object.keys(dados);
+    const valores: Array<any> = Object.values(dados);
+    let dadosf: Array<Dados> = new Array();
 
     for(let i: number = 0; i < atributos.length; i++) {
+        if(!atributos[i])
+            throw new Error();
+
         dadosf.push({
-            atributo: atributos[i],
+            atributo: atributos[i] ?? "",
             valor: valores[i]
         });
     }
@@ -149,4 +79,63 @@ export const formatReg = (arr: Array<Dados>): Record<string, any> => {
     }
 
     return dadosi;
+}
+
+export const alterColec = async (colecNome: string, dados: ColecMeta): Promise<void> => {
+    let colecMeta: Array<ColecMeta> = await getColecMeta();
+
+    for(let i: number = 0; i < colecMeta.length; i++) {
+        if(colecMeta[i]?.nome == colecNome) {
+            colecMeta[i] = dados;
+            await fs.writeTextFile(path.join(dirRaiz, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
+            return;
+        }
+    }
+
+    throw new Error("A coleção não existe!");
+}
+
+//SE ALGUM PROBLEMA APARECER COM A GERAÇÃO DAS CHAVES, AQUI ESTÁ O PROBLEMA
+export const getRegMeta = async (colecNome: string): Promise<RegMeta> => {
+    let caminho: string;
+    let dados: Array<any> = new Array();
+
+    const caminhos: { colecMeta: string, colecPasta: string } = {
+        colecMeta: path.join(dirRaiz, "colecMeta.json"),
+        colecPasta: path.join(dirRaiz, `${colecNome}_dados`)
+    };
+
+    const colecMeta: Array<ColecMeta> = await getColecMeta();
+    const colec = colecMeta.find(colecao => colecao.nome == colecNome);
+
+    if(!colec)
+        throw new Error("Coleção não encontrada");
+
+    for(let chave of colec.quadChaves) 
+    {
+        caminho = path.join(caminhos.colecPasta, `dados[${chave}].json`);
+        dados = JSON.parse(await fs.readTextFile(caminho));
+
+        for(let i = 1; i <= colec.altura; i++) {
+            if(!dados[i] || dados[i].dados == null)
+                return { chave: chave, pos: i };
+        }
+    }
+    
+    if(colec.disp == 0)
+        throw new Error("Quantidade máxima de chaves alcançada!");
+
+    
+    let novaChave: number = await gerarJSON(colecNome, colec.quadChaves.length);
+    colec.quadChaves.push(novaChave);
+    await alterColec(colecNome, colec);
+    
+    return { chave: novaChave, pos: 1 };
+}
+
+export const getDadosArq = async (colecNome: string, chave: number): Promise<any[]> => {
+    const caminho: string = path.join(dirRaiz, `${colecNome}_dados`, `dados[${chave}].json`);
+    const dadosArq: Array<any> = JSON.parse(await fs.readTextFile(caminho));
+    
+    return dadosArq;
 }

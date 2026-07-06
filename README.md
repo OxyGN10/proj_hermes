@@ -15,81 +15,192 @@ Conceder ao desenvolvedor de uma aplicação uma alternativa mais simplificada p
 
 - **Coleção**: Diretório que armazena um conjunto de arquivos de dados;
 - **Chave**: Arquivo JSON que armazena um conjunto de registros em array;
-- **Registro**: Array de dados no formato: `{ atributo: string, dado: any }` e localizador;
+- **Registro**: Array de dados no formato: `{ atributo: string, dado: any }` e localizador, definido em: `{ localizador: string, dados: Array<dados> }`;
 - **Localizador**: Metadados de registro, composto pelos 6 primeiros caracteres do nome da coleção, a chave em que se encontra e a posição em que foi inserido na chave;
 - **ColecMeta**: Arquivo JSON que armazena um Array com os dados sobre as coleções, como *nome, altura, largura* e *quadro de chaves*
 - **Altura da coleção**: Limite de registros em um arquivo desconsiderando o cabeçalho da chave (metadados de chave);
 - **Largura da coleção**: Limite de arquivos por coleção.
 
-## Função Principal
+## Definição da Classe:
 
-Em vez de precisar instanciar uma classe e utilizar vários métodos, o Hermes realiza a exportação de uma função e através do enum *Modos* que é exportado juntamente com a função o usuário consegue orientar a execução do programa.
-
-### Definição da Função
-`const Hermes = async (modo: Modos, params: h_params): Promise<any>`
-
-- **Inicalizar Coleção** [`Modos.iniciar_colec`]: Cria o diretório da coleção e o primeiro arquivo de dados, para este modo é necessário inicializar o objeto `params` com as chaves `colecNome`, `altura` e `largura`, neste modo, a função retornará `true` se a operação for bem sucedida ou `false` se houver erro;
-
-#### Exemplo
 ```
-import { Modos, Hermes } from "./proj_hermes/index.ts";
+class Hermes 
+{
+    protected colecNome: string;
+    protected altura?: number | null;
+    protected largura?: number | null;
+    protected quadChaves: Array<number>;
 
-Hermes(Modos.iniciar_colec, { colecNome: "ColecTeste", altura: 50, largura: 20 });
-```
-
-- **Remover Coleção** [`Modos.remover_colec`]: Remove o diretório da coleção e atualiza o arquivo `colecMeta.json` ao remover a coleção todos os dados são também removido, uma função `backup()` está sendo estudada para permitir a remoção da coleção sem provocar perdas nos dados. Para esta função se faz necessário somente a inicialização de `params.colecNome`, a função retornará `true` se a operação for bem sucedida ou `false` se houver erro;
-
-#### Exemplo
-```
-import { Modos, Hermes } from "./proj_hermes/index.ts";
-
-Hermes(Modos.remover_colec, { colecNome: "ColecTeste" });
+    async init(): Promise<void>;
+    async getColec(): Promise<void>;
+    async rm(): Promise<void>;
+    async inserir_dados(dados: any): Promise<string>;
+    async rm_dados(localizador: string): Promise<void>;
+    async dr_busca(localizador: string): Promise<any>;
+    async it_busca(campo: Dados): Promise<any[]>;
+    async it_rmDados(campo: Dados): Promise<void>;
+}
 ```
 
-- **Inserir Dados** [`Modos.salvar_dados`]: Insere à útima posição da última chave disponível os dados informados pelo usuário, caso a última chave esteja cheia (isto é, a quantidade de registros é igual a altura da coleção) o programa cria um novo arquivo, insere os dados e retorna o localizador do registro.Para esta função se faz necessário a inicialização de `params.colecNome` e `params.dados`, a função retornará `true` se a operação for bem sucedida ou `false` se houver erro;
+### Funções dos métodos
 
-#### Exemplo
+Legenda:
+
+- **Função do método** [`definição do método`]: descrição do método
+
+    #### Exemplo:
+
+    `implementação do método`
+
+- **Inicializar Coleção** [`Hermes.init()`]: Cria o diretório da coleção e armazena os dados no arquivo `colecMeta.json`, após a inicialização torna-se possível a inserção de novos dados;
+
+#### Exemplo:
+
 ```
-import { Modos, Hermes } from "./proj_hermes/index.ts";
+import { Hermes } from "@proj-hermes/hermes";
 
-Hermes(Modos.salvar_dados, { 
-        colecNome: "ColecTeste", 
-        dados: { nome: "Gaspar", idade: 25, maior: true }
-    }
-);
-```
+let pessoas: Hermes = new Hermes("Pessoas", 15, 5);
 
-- **Remover Dados** [`Modos.remover_dados`]: Remove os dados no localizador especificado, por este modo causar certa entropia na estrutura da coleção, estuda-se a implementação da função `reset()` para reorganizar os dados ao longo das chaves. Para esta função se faz necessário a inicialização de `params.colecNome` e `params.localizador`, a função retornará `true` se a operação for bem sucedida ou `false` se houver erro;
-
-#### Exemplo
-```
-import { Modos, Hermes } from "./proj_hermes/index.ts";
-
-Hermes(Modos.remover_dados, { colecNome: "ColecTeste", localizador: "ColecT.0.1"});
-```
-
-- **Buscar Direta de Dados** [`Modos.buscar_dados`]: recupera os dados no localizador especificado, de forma direta, sem uso de recurções ou iterações para acessar os dados, a partir dos metadados de registro que compõe o localizador é possível encontrar a posição exata dos dados. Para esta função se faz necessário a inicialização de `params.colecNome` e `params.localizador`, a função retornará o registro se a operação for bem sucedida ou `false` se houver erro;
-
-#### Exemplo
-```
-import { Modos, Hermes } from "./proj_hermes/index.ts";
-
-Hermes(Modos.buscar_dados, { colecNome: "ColecTeste", localizador: "ColecT.0.1"});
+try {
+    await pessoas.init();
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
 ```
 
-- **Buscar Iterativa de Dados** [`Modos.buscar_dados_it`]: recupera os dados de acordo com um atributo e valor especificado, a partir do método iterativo o programa verifica as chaves em busca de registros que contenham o atributo e valor especificado. Para esta função se faz necessário a inicialização de `params.colecNome`, `params.dados_busca`, a função retornará um array com todos os registros que possuirem o atributo e valor desejado se a operação for bem sucedida ou `false` se houver erro;
+- **Capturar a coleção** [`Hermes.getColec()`]: Realiza busca no arquivo `colecMeta.json` e atribui os metadados de uma coleção existente referenciada pelo usuário ao objeto (na prática um auto-instanciamento de objeto), se faz necessário quando o objeto não se encontra instanciado, este método é o reverso do método `init()` o qual cria a coleção a partir dos dados obtidos na inicialização, como neste contexto a coleção já estará inicializada, basta capturá-la, necessária a chamda antes dos métodos de inserção e busca iterativa;
 
-#### Exemplo
 ```
-import { Modos, Hermes } from "./proj_hermes/index.ts";
+import { Hermes } from "@proj-hermes/hermes";
 
-Hermes(Modos.buscar_dados_it, { 
-        colecNome: "ColecTeste", 
-        dadosBusca: { atributo: "idade", valor: 25 }
-    }
-);
+let pessoas: Hermes = new Hermes("Pessoas");
+
+try {
+    await pessoas.getColec(); //a coleção Pessoas passará a ter os metadados da coleção
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
 ```
 
-## AVISO
+- **Remover a coleção** [`Hermes.rm()`]: Apaga o diretório da coleção e atualiza o arquivo `colecMeta.json` removendo os dados, após a remoção torna-se possível a inicialização de uma coleção com o mesmo nome da anterior;
 
-O Projeto Hermes não se propõe a substituir bancos de dados como PostgreSQL, MySQL ou MongoDB. Trata-se de uma interface de gerenciamento de dados em arquivos a nível de aplicação, se seu projeto demanda acesso concorrente e criptografia a recomendação é utilizar os SGBDs, mas se seu projeto demandar acesso rápido a uma informação não sensível como metadados em aplicações.
+#### Exemplo:
+
+```
+import { Hermes } from "@proj-hermes/hermes";
+
+let pessoas: Hermes = new Hermes("Pessoas");
+
+try {
+    await pessoas.rm();
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
+```
+
+- **Inserção de dados** [`Hermes.inserir_dados(dados: any)`]: Insere à útima posição da última chave disponível os dados informados pelo usuário, caso a última chave esteja cheia (isto é, a quantidade de registros é igual a altura da coleção) o programa cria um novo arquivo, insere os dados e retorna o localizador do registro. Caso não esteja no mesmo fluxo de execução que a inicialização do projeto se faz necessária a referência do método `getColec()`;
+
+#### Exemplo 1: (fluxo de execução da inicialização)
+
+```
+import { Hermes } from "@proj-hermes/hermes";
+
+let pessoas: Hermes = new Hermes("Pessoas", 15, 5);
+
+try {
+    await pessoas.init();
+    let localizador: string = await pessoas.inserir_dados({ nome: "Gaspar", idade: 255, curso: "Computação" });
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
+```
+
+#### Exemplo 2: (fluxo de execução posterior à inicialização)
+
+```
+import { Hermes } from "@proj-hermes/hermes";
+
+let pessoas: Hermes = new Hermes("Pessoas");
+
+try {
+    await pessoas.getColec();
+    let localizador: string = await pessoas.inserir_dados({ nome: "Gaspar", idade: 255, curso: "Computação" });
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
+```
+
+- **Remoção direta dos dados** [`Hermes.rm_dados(localizador: string)`]: Remove diretamente registro presente na coleção a partir dos metadados de registro (localizador), este método dispensa uso de iterações ou recurssões removendo diretamente o registro no localizador apontado, esta função está sob profunda análise por provocar certa entropia na estrutura da coleção já que pode causar lacunas e produzir novas chaves sem necessidade;
+
+#### Exemplo:
+
+```
+import { Hermes } from "@proj-hermes/hermes";
+
+let pessoas: Hermes = new Hermes("Pessoas");
+
+try {
+    await pessoas.rm_dados("Pessoa.0.1"); //No caso, o primeiro registro da chave 0 da coleção Pessoas (sempre os 6 primeiros caracteres do nome da coleção)
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
+```
+
+- **Busca direta dos dados** [`Hermes.dr_busca(localizador: string)`]: Captura diretamente registro presente na coleção a partir dos metadados de registro (localizador), este método dispensa uso de iterações ou recurssões removendo diretamente o registro no localizador apontado e retorna um objeto JavaScript com o localizador e os dados presentes no registros;
+
+#### Exemplo:
+
+```
+import { Hermes } from "@proj-hermes/hermes";
+
+let pessoas: Hermes = new Hermes("Pessoas");
+
+try {
+    let dados = await pessoas.dr_busca("Pessoa.0.1");
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
+```
+
+- **Busca iterativa dos dados** [`Hermes.it_busca(campo: Dados)`]: Captura os dados após uma busca completa (isto é, em cada registro) e retorna um array de objetos JS com os registros que possuiram os mesmos valores do parâmetro `campo` que está definido em: `{ atributo: string, valor: string | number | boolean }`. Para este método, se faz necessário o uso de `getColec` caso não esteja no mesmo fluxo de execução do método `init()`;
+
+#### Exemplo:
+
+```
+import { Hermes } from "@proj-hermes/hermes";
+
+let pessoas: Hermes = new Hermes("Pessoas");
+
+try {
+    await pessoas.getColec();
+    let dados = await pessoas.it_busca({ atributo: nome, valor: "Gaspar" }); //retorno: [{ nome: "Gaspar", idade: 255, curso: "Computação" }]
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
+```
+
+- **Remoção iterativa dos dados** [`Hermes.it_rmDados(campo: Dados)`]: Remove os dados após uma busca completa (isto é, em cada registro), aplica a busca iterativa para encontrar o registro e em seguida remove-o. Para este método, se faz necessário o uso de `getColec` caso não esteja no mesmo fluxo de execução do método `init()`;
+
+#### Exemplo:
+
+```
+import { Hermes } from "@proj-hermes/hermes";
+
+let pessoas: Hermes = new Hermes("Pessoas");
+
+try {
+    await pessoas.getColec();
+    await pessoas.it_rmDados({ atributo: nome, valor: "Gaspar" });
+} catch(err) {
+    if(err instance of Error)
+        console.error(err);
+}
+```

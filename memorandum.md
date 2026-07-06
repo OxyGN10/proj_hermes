@@ -8,9 +8,14 @@
 
 O Projeto Hermes (nome inicial) tem como objetivo reformular o projeto pessoal IODJSON (Interface de Organização de Dados em JSON), uma interface de gerenciamento de dados consistentes que dispensa o uso de bancos de dados como o SQLite, permitindo uma integração nativa com a aplicação. A nova versão construída em TypeScript e Deno, busca ampliar a segurança e a velocidade de execução da ferramenta.
 
-## Justificativa de Escolha do Deno
+## Justificativa de Escolha do Bun
 
-Após testes, o Deno mostrou-se a ferramenta ideal para o propósito do projeto. Seu suporte nativo ao TypeScript maximiza a previsibilidade das operações realizadas pela interface.
+A reavaliação do projeto que me levou a produzir a versão 2.0, também me levou a mudar o ambiente de execução padrão, testes realizados com o Bun me levaram a considerá-lo como ambiente preferencial para execução desta solução, no entanto, trabalho para que esta solução também seja funcional para usuários do Deno, o Bun rapidamente assumiu a posição de ambiente de execução preferencial devido a correção de pontos negativos presentes até mesmo no Deno, como a simplificação da produção de projetos React e melhorias de performance.
+
+## Mudanças da versão 2.0
+
+- **Utilização da orientação a objetos**: o abandono da arquitetura funcional se deu de um modo que permitiria ao usuário uma maior flexibilidade para manipular os dados, os quais permitira a partir da herança implementar uma arquitetura de manipulação que se adequasse à realidade de cada projeto;
+- **Modificação do runtime original deno -> bun**: embora a arquitetura tenha sido modificada, segue a compatibilidade com o ecossistema 'Deno', no entanto, o projeto foi reformulado para o Bun (embora ainda reserve compatibilidade com o Deno).
 
 ## Desafios Técnicos Identificados
 
@@ -22,12 +27,13 @@ Após testes, o Deno mostrou-se a ferramenta ideal para o propósito do projeto.
 - ~~Preparação para publicação no JSR.~~
 - ~~Publicação como pacote JSR (gerenciador de pacotes do ecossistema Deno, equivalente ao NPM do Node.js);~~
 - Integração com outras aplicações JS ou TS baseadas em Deno.
-- Desenvolvimento da lógica de reorganização (método `reset()`);
+- ~~Desenvolvimento da lógica de reorganização (método `reset()`);~~
 - ~~Otimização da busca recursiva;~~
 
 ## Desafios Vencidos
 - Transformação da busca recursiva em busca iterativa, otimizando-a;
-- Publicação como pacote JSR (o pacote encontra-se em adaptação).
+- Publicação como pacote JSR (o pacote encontra-se em adaptação);
+- Uma implementação foi realizada, e em vez de utilizar o método `chave.splice()` ao remover os dados, a posição é definida como `null` o que permite a reescrita dos dados. A lógica de inserção dos dados também foi modificada para buscar também esses registros.
 
 ## História 
 

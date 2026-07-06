@@ -1,12 +1,19 @@
-// deno-lint-ignore-file no-explicit-any
-export const __dirname: string = Deno.cwd();
+import { join } from "@bearz/path";
+import { cwd } from "@bearz/fs/cwd";
+
+export const dirRaiz: string = join(cwd(), "hermes_src");
 
 export interface ColecMeta {
     nome: string;
     altura: number;
     largura: number;
-    quadChaves: number[];
-    ultArq: string;
+    quadChaves: Array<number>;
+    disp: number
+}
+
+export interface RegMeta {
+    chave: number;
+    pos: number;
 }
 
 export interface Dados {
@@ -16,23 +23,5 @@ export interface Dados {
 
 export interface Registro {
     localizador: string;
-    dados: Dados[];
-}
-
-export interface h_params {
-    colecNome?: string,
-    localizador?: string,
-    altura?: number,
-    largura?: number,
-    dados?: any,
-    dadosBusca?: Dados
-}
-
-export enum Modos {
-    iniciar_colec,
-    remover_colec,
-    salvar_dados,
-    remover_dados,
-    buscar_dados,
-    buscar_dados_it,
+    dados: Array<Dados> | null;
 }

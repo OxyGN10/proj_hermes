@@ -1,6 +1,8 @@
 {
-  "name": "projeto-2.1-(ref)",
+  "name": "@proj-hermes/hermes",
   "module": "index.ts",
+  "version": "0.2.1",
+  "license": "MPL-2.0",  
   "type": "module",
   "private": true,
   "devDependencies": {

@@ -1,7 +1,7 @@
-import { join } from "@bearz/path";
-import { cwd } from "@bearz/fs/cwd";
+import process from "node:process";
+import { join } from "node:path";
 
-export const dirRaiz: string = join(cwd(), "hermes_src");
+export const dirRaiz: string = join(process.cwd(), "hermes_src");
 
 export interface ColecMeta {
     nome: string;

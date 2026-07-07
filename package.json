@@ -1,7 +1,5 @@
 {
-  "name": "@proj-hermes/hermes",
-  "version": "0.2.1",
-  "license": "MPL-2.0",
+  "name": "projeto-2.1-(ref)",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -10,9 +8,5 @@
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "dependencies": {
-    "@bearz/fs": "npm:@jsr/bearz__fs",
-    "@bearz/path": "npm:@jsr/bearz__path"
   }
 }

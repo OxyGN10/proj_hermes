@@ -1,14 +1,18 @@
-import * as path from "@bearz/path";
-import * as fs from "@bearz/fs";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import { type ColecMeta, type Dados, dirRaiz, type RegMeta } from "./auxTipos";
 
 export const getColecMeta = async (): Promise<ColecMeta[]> => {
     const caminho: string = path.join(dirRaiz , "colecMeta.json");
     
-    if((!await fs.exists(caminho)))
+    try {
+        await fs.access(caminho);
+    }
+    catch {
         await defAmbiente();
+    }
 
-    const colecMeta: Array<ColecMeta> = JSON.parse(await fs.readTextFile(caminho));
+    const colecMeta: Array<ColecMeta> = JSON.parse(await fs.readFile(caminho, "utf-8"));
 
     return colecMeta;    
 }
@@ -26,8 +30,8 @@ export const colecExiste = async (colecNome: string): Promise<boolean> => {
 
 export const defAmbiente = async (): Promise<void> => {
     const caminho: string = path.join(dirRaiz, "colecMeta.json");
-    await fs.makeDir(dirRaiz);
-    await fs.writeTextFile(caminho, JSON.stringify([]));
+    await fs.mkdir(dirRaiz)
+    await fs.writeFile(caminho, JSON.stringify([]), "utf-8");
 }
 
 export const gerarJSON = async (colecNome: string, chave: number = 0): Promise<number> => {
@@ -36,7 +40,7 @@ export const gerarJSON = async (colecNome: string, chave: number = 0): Promise<n
     for(let colec of colecMeta) 
     {
         if(colec.nome == colecNome && colec.quadChaves.length < colec.largura) {
-            await fs.writeTextFile(path.join(dirRaiz, `${colecNome}_dados`, `dados[${chave}].json`), JSON.stringify([{ chave: chave, disp: colec.altura }], null, 4));
+            await fs.writeFile(path.join(dirRaiz, `${colecNome}_dados`, `dados[${chave}].json`), JSON.stringify([{ chave: chave, disp: colec.altura }], null, 4));
 
             return chave;
         }
@@ -87,7 +91,7 @@ export const alterColec = async (colecNome: string, dados: ColecMeta): Promise<v
     for(let i: number = 0; i < colecMeta.length; i++) {
         if(colecMeta[i]?.nome == colecNome) {
             colecMeta[i] = dados;
-            await fs.writeTextFile(path.join(dirRaiz, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
+            await fs.writeFile(path.join(dirRaiz, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
             return;
         }
     }
@@ -95,7 +99,6 @@ export const alterColec = async (colecNome: string, dados: ColecMeta): Promise<v
     throw new Error("A coleção não existe!");
 }
 
-//SE ALGUM PROBLEMA APARECER COM A GERAÇÃO DAS CHAVES, AQUI ESTÁ O PROBLEMA
 export const getRegMeta = async (colecNome: string): Promise<RegMeta> => {
     let caminho: string;
     let dados: Array<any> = new Array();
@@ -114,7 +117,7 @@ export const getRegMeta = async (colecNome: string): Promise<RegMeta> => {
     for(let chave of colec.quadChaves) 
     {
         caminho = path.join(caminhos.colecPasta, `dados[${chave}].json`);
-        dados = JSON.parse(await fs.readTextFile(caminho));
+        dados = JSON.parse(await fs.readFile(caminho, "utf-8"));
 
         for(let i = 1; i <= colec.altura; i++) {
             if(!dados[i] || dados[i].dados == null)
@@ -135,7 +138,7 @@ export const getRegMeta = async (colecNome: string): Promise<RegMeta> => {
 
 export const getDadosArq = async (colecNome: string, chave: number): Promise<any[]> => {
     const caminho: string = path.join(dirRaiz, `${colecNome}_dados`, `dados[${chave}].json`);
-    const dadosArq: Array<any> = JSON.parse(await fs.readTextFile(caminho));
+    const dadosArq: Array<any> = JSON.parse(await fs.readFile(caminho, "utf-8"));
     
     return dadosArq;
 }

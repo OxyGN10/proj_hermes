@@ -1,5 +1,5 @@
-import * as fs from "@bearz/fs";
-import * as path from "@bearz/path";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import { type ColecMeta, dirRaiz, type Registro, type Dados, type RegMeta } from "./fonte/auxTipos";
 import { colecExiste, gerarJSON, getColecMeta, getRegMeta, formatDados, getDadosArq, formatReg } from "./fonte/auxfuncs";
 
@@ -38,6 +38,8 @@ export class Hermes
 
     /**
      * Inicializa a coleção, cria o diretório em que os arquivos serão criados
+     * @throws Caso a coleção já esteja registrada em colecMeta.json, o programa retorna erro, pois não podem haver duas coleções com o mesmo nome
+     * @throws Os atributos altura e largura são obrigatórios para a inicialização, pois determinam os limites de crescimento da coleção
      */
     async init(): Promise<void> {
         if(await colecExiste(this.colecNome))
@@ -57,8 +59,8 @@ export class Hermes
         let colecMeta: Array<ColecMeta> = await getColecMeta();
         colecMeta.push(colecMetaDados);
 
-        await fs.makeDir(path.join(dirRaiz, `${this.colecNome}_dados`));
-        await fs.writeTextFile(path.join(dirRaiz, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
+        await fs.mkdir(path.join(dirRaiz, `${this.colecNome}_dados`));
+        await fs.writeFile(path.join(dirRaiz, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
         await gerarJSON(this.colecNome);
     }
 
@@ -91,8 +93,8 @@ export class Hermes
         const idx: number = colecMeta.findIndex(colec => colec.nome == this.colecNome);
 
         colecMeta.splice(idx, 1);
-        await fs.writeTextFile(path.join(dirRaiz, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
-        await fs.remove(path.join(dirRaiz, `${this.colecNome}_dados`), { recursive: true });
+        await fs.writeFile(path.join(dirRaiz, "colecMeta.json"), JSON.stringify(colecMeta, null, 4));
+        await fs.rm(path.join(dirRaiz, `${this.colecNome}_dados`), { recursive: true });
     }
 
     /**
@@ -102,9 +104,6 @@ export class Hermes
      */
     async inserir_dados(dados: any): Promise<string> {
         const regMeta: RegMeta = await getRegMeta(this.colecNome);
-        
-        //LEMBRETE: REMOVER
-        console.log(`RegMeta == chave: ${regMeta.chave} | pos: ${regMeta.pos}`);
 
         const reg: Registro = {
             localizador: `${this.colecNome.slice(0, 6)}.${regMeta.chave}.${regMeta.pos}`,
@@ -113,11 +112,10 @@ export class Hermes
 
         let dadosArq: Array<any> = await getDadosArq(this.colecNome, regMeta.chave);
 
-        //dadosArq.push(reg);
         dadosArq[regMeta.pos] = reg;
         dadosArq[0].disp--;
 
-        await fs.writeTextFile(path.join(dirRaiz, `${this.colecNome}_dados`, `dados[${regMeta.chave}].json`), JSON.stringify(dadosArq, null, 4));
+        await fs.writeFile(path.join(dirRaiz, `${this.colecNome}_dados`, `dados[${regMeta.chave}].json`), JSON.stringify(dadosArq, null, 4));
 
         return reg.localizador;
     }
@@ -131,12 +129,12 @@ export class Hermes
 
         const regMeta: RegMeta = { chave: parseInt(loc[1] ?? ""), pos: parseInt(loc[2] ?? "") };
         const caminho: string = path.join(dirRaiz, `${this.colecNome}_dados`, `dados[${regMeta.chave}].json`);
-        let dados: Array<any> = JSON.parse(await fs.readTextFile(caminho));
+        let dados: Array<any> = JSON.parse(await fs.readFile(caminho, "utf-8"));
 
         dados[regMeta.pos].dados = null
         dados[0].disp++;
         
-        await fs.writeTextFile(caminho, JSON.stringify(dados, null, 4));
+        await fs.writeFile(caminho, JSON.stringify(dados, null, 4));
     }
 
     /**
@@ -148,15 +146,16 @@ export class Hermes
         const loc: Array<string> = localizador.split(".");
 
         const regMeta: RegMeta = { chave: parseInt(loc[1] ?? ""), pos: parseInt(loc[2] ?? "") };
-        const dados: Array<any> = JSON.parse(await fs.readTextFile(path.join(dirRaiz, `${this.colecNome}_dados`, `dados[${regMeta.chave}].json`)));
+        const dados: Array<any> = JSON.parse(await fs.readFile(path.join(dirRaiz, `${this.colecNome}_dados`, `dados[${regMeta.chave}].json`), "utf-8"));
         
         return { localizador: dados[regMeta.pos].localizador, ...formatReg(dados[regMeta.pos].dados) };
     }
 
     /**
      * Realiza a busca dos dados a partir de um atributo e valor especificado
-     * @param campo definido em { atributo:string, valor: string | number | boolean }
+     * @param campo definido em { atributo: string, valor: string | number | boolean }
      * @returns dados em formato JS object
+     * @throws lança erro se todos os registros forem analisados e nenhum corresponder ao procurado
      */
     async it_busca(campo: Dados): Promise<any[]> {
         let i: number = 0;
@@ -169,7 +168,7 @@ export class Hermes
                 break;
 
             const caminho: string = path.join(dirRaiz, `${this.colecNome}_dados`, `dados[${i}].json`);
-            const chave: Array<any> = JSON.parse(await fs.readTextFile(caminho));
+            const chave: Array<any> = JSON.parse(await fs.readFile(caminho, "utf-8"));
 
             if(j >= chave.length) {
                 i++;

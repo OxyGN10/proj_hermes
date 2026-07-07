@@ -1,0 +1,6 @@
+{
+    "name": "@proj-hermes/hermes",
+    "version": "0.2.1",
+    "licence": "MPL-2.0",
+    "exports": "./index.ts"
+}

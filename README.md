@@ -23,7 +23,7 @@ Conceder ao desenvolvedor de uma aplicação uma alternativa mais simplificada p
 
 ## Definição da Classe:
 
-```
+```TypeScript
 class Hermes 
 {
     protected colecNome: string;
@@ -56,7 +56,7 @@ Legenda:
 
 #### Exemplo:
 
-```
+```TypeScript
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas", 15, 5);
@@ -71,7 +71,7 @@ try {
 
 - **Capturar a coleção** [`Hermes.getColec()`]: Realiza busca no arquivo `colecMeta.json` e atribui os metadados de uma coleção existente referenciada pelo usuário ao objeto (na prática um auto-instanciamento de objeto), se faz necessário quando o objeto não se encontra instanciado, este método é o reverso do método `init()` o qual cria a coleção a partir dos dados obtidos na inicialização, como neste contexto a coleção já estará inicializada, basta capturá-la, necessária a chamda antes dos métodos de inserção e busca iterativa;
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas");
@@ -88,7 +88,7 @@ try {
 
 #### Exemplo:
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas");
@@ -105,7 +105,7 @@ try {
 
 #### Exemplo 1: (fluxo de execução da inicialização)
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas", 15, 5);
@@ -121,7 +121,7 @@ try {
 
 #### Exemplo 2: (fluxo de execução posterior à inicialização)
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas");
@@ -139,7 +139,7 @@ try {
 
 #### Exemplo:
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas");
@@ -156,7 +156,7 @@ try {
 
 #### Exemplo:
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas");
@@ -173,7 +173,7 @@ try {
 
 #### Exemplo:
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas");
@@ -191,7 +191,7 @@ try {
 
 #### Exemplo:
 
-```
+```TypeScript 
 import { Hermes } from "@proj-hermes/hermes";
 
 let pessoas: Hermes = new Hermes("Pessoas");
